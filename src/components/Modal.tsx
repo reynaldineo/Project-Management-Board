@@ -76,10 +76,10 @@ export function ModalRoot({
               )}
             >
               <div className="w-full ">
-                <header className="flex items-center justify-between p-4 sm:px-6">
+                <header className="flex items-center justify-between px-4 pt-4 sm:px-6 sm:pb-3.5">
                   <Dialog.Title
                     className={clsxm(
-                      "pr-2 text-lg font-semibold",
+                      "pr-2 text-xl font-semibold",
                       titleClassName
                     )}
                   >
@@ -104,7 +104,13 @@ function Section({
   children,
 }: React.ComponentPropsWithoutRef<"div">) {
   return (
-    <div className={clsxm("flex w-full flex-col", "p-4 sm:p-6", className)}>
+    <div
+      className={clsxm(
+        "flex w-full flex-col",
+        "px-4 pb-4 sm:px-6 sm:pb-6",
+        className
+      )}
+    >
       {children}
     </div>
   );
