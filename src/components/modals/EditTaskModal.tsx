@@ -30,8 +30,10 @@ export default function EditTaskModal({ task }: { task: Task }) {
   const { mutateUpdatTask, isPending } = UpdateTask();
   const { refetch } = GetTaskData();
   const onSubmit: SubmitHandler<UpdateTaskData> = async (data) => {
-    await mutateUpdatTask({ taskId: task._id, taskData: data });
-    await refetch();
+    if (isEdit) {
+      await mutateUpdatTask({ taskId: task._id, taskData: data });
+      await refetch();
+    }
     if (!isEdit) setIsEdit(true);
     else if (isEdit) {
       setIsEdit(false);
@@ -41,7 +43,13 @@ export default function EditTaskModal({ task }: { task: Task }) {
 
   return (
     <div>
-      <div onClick={() => setIsOpen(true)} className="btn-edit-outside">
+      <div
+        onClick={() => {
+          setIsEdit(false);
+          setIsOpen(true);
+        }}
+        className="btn-edit-outside"
+      >
         <MdEdit size={15} />
       </div>
       <ReactModal

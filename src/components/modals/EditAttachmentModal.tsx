@@ -29,12 +29,14 @@ export default function EditAttachmentModal({
   const { mutateUpdateAttachment, isPending } = UpdateAttachment();
   const { refetch } = GetTaskData();
   const onSubmit: SubmitHandler<UpdateAttachmentType> = async (data) => {
-    await mutateUpdateAttachment({
-      attachmentId: attachment._id,
-      taskId,
-      data,
-    });
-    await refetch();
+    if (isEdit) {
+      await mutateUpdateAttachment({
+        attachmentId: attachment._id,
+        taskId,
+        data,
+      });
+      await refetch();
+    }
     if (!isEdit) setIsEdit(true);
     else if (isEdit) {
       setIsEdit(false);
@@ -69,7 +71,12 @@ export default function EditAttachmentModal({
       >
         <div className="title-container">
           <p className="text-edit">Edit Attachment</p>
-          <button onClick={() => setIsOpen(false)}>
+          <button
+            onClick={() => {
+              setIsEdit(false);
+              setIsOpen(false);
+            }}
+          >
             <IoClose size={20} />
           </button>
         </div>
