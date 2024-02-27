@@ -2,11 +2,10 @@ import clsxm from "../lib/clxsm";
 import Card from "./Card";
 import GetTaskData from "../hooks/GetTaskData";
 import { BoardTitle } from "../types/task/Task";
-import AddModal from "./modal/AddModal";
-import { FaPlus } from "react-icons/fa6";
 import { useDragTaskStore } from "../store/useDragTaskStore";
 import UpdateTask from "../hooks/UpdateTask";
 import Loading from "./Loading";
+import AddTaskModal from "./modals/AddTaskModal";
 
 export default function Board({ title }: { title: keyof typeof BoardTitle }) {
   const { taskData, refetch } = GetTaskData();
@@ -57,17 +56,7 @@ export default function Board({ title }: { title: keyof typeof BoardTitle }) {
         {SpessificData.map((cardData) => (
           <Card cardData={cardData} key={cardData._id} />
         ))}
-        <AddModal defaultStatus={title}>
-          {({ openModal }) => (
-            <button
-              type="button"
-              className="p-1.5 bg-gray-300 hover:bg-gray-500 text-white rounded-lg flex items-center justify-center"
-              onClick={openModal}
-            >
-              <FaPlus className="mr-1.5" /> New Task
-            </button>
-          )}
-        </AddModal>
+        <AddTaskModal defaultStatus={title} />
       </div>
     </section>
   );
