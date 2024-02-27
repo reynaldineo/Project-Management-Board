@@ -1,11 +1,14 @@
 import { useState } from "react";
 import ReactModal from "react-modal";
 import { UpdateAttachmentType } from "../../types/task/UpdateAttachment";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, FormProvider } from "react-hook-form";
 import DeleteAttachment from "../../hooks/DeleteAttachment";
 import UpdateAttachment from "../../hooks/UpdateAttachment";
-import clsxm from "../../lib/clxsm";
 import { IoClose } from "react-icons/io5";
+import GetTaskData from "../../hooks/GetTaskData";
+import Input from "../form/Input";
+import "./editAttachmentModal.css";
+import clsx from "clsx";
 
 export default function EditAttachmentModal({
   attachment,
@@ -19,33 +22,42 @@ export default function EditAttachmentModal({
   // * ===== Edit Form =====
   const [isEdit, setIsEdit] = useState<boolean>(false);
   // * ===== Form =====
-  const { register, handleSubmit } = useForm<UpdateAttachmentType>();
+  const methods = useForm<UpdateAttachmentType>();
+  const { handleSubmit } = methods;
 
   // * ===== Handle Form =====
-  const { mutateUpdateAttachment } = UpdateAttachment();
-  const onSubmit: SubmitHandler<UpdateAttachmentType> = (data) => {
-    console.log(data);
-
-    mutateUpdateAttachment({ attachmentId: attachment._id, taskId, data });
+  const { mutateUpdateAttachment, isPending } = UpdateAttachment();
+  const { refetch } = GetTaskData();
+  const onSubmit: SubmitHandler<UpdateAttachmentType> = async (data) => {
+    await mutateUpdateAttachment({
+      attachmentId: attachment._id,
+      taskId,
+      data,
+    });
+    await refetch();
+    if (!isEdit) setIsEdit(true);
+    else if (isEdit) {
+      setIsEdit(false);
+      setIsOpen(false);
+    }
   };
 
-  const { mutateDeleteAttachment } = DeleteAttachment();
-  const handleDelete = (attachmentId: string) => {
-    mutateDeleteAttachment({ attachmentId, taskId });
+  const { mutateDeleteAttachment, isPending: isPendingDelete } =
+    DeleteAttachment();
+  const handleDelete = async (attachmentId: string) => {
+    await mutateDeleteAttachment({ attachmentId, taskId });
+    await refetch();
   };
   return (
     <div>
-      <div
-        onClick={() => setIsOpen(true)}
-        className="px-2.5 py-1.5 bg-teal-500 rounded-lg text-white w-fit text-sm"
-      >
+      <div onClick={() => setIsOpen(true)} className="btn-outside-atachment">
         {attachment.displayText}
       </div>
       <ReactModal
         isOpen={isOpen}
+        ariaHideApp={false}
         style={{
           content: {
-            width: "500px",
             left: "50%",
             top: "50%",
             right: "auto",
@@ -55,60 +67,47 @@ export default function EditAttachmentModal({
           },
         }}
       >
-        <div className="flex justify-between">
-          <p className="text-xl font-bold pb-1">Edit Attachment</p>
+        <div className="title-container">
+          <p className="text-edit">Edit Attachment</p>
           <button onClick={() => setIsOpen(false)}>
             <IoClose size={20} />
           </button>
         </div>
-        <form onSubmit={handleSubmit(onSubmit)} className="flex-col space-y-4">
-          <div>
-            <label htmlFor="displayText">Display Text</label>
-            <input
-              {...register("displayText")}
+        <FormProvider {...methods}>
+          <form onSubmit={handleSubmit(onSubmit)} className="form-container">
+            <Input
               id="displayText"
+              label="Display Text"
               disabled={!isEdit}
               defaultValue={attachment.displayText}
-              className="border px-1 mt-1.5 w-full"
+              required
             />
-          </div>
-          <div>
-            <label htmlFor="link">Title</label>
-            <input
-              {...register("link")}
+            <Input
               id="link"
+              label="Link"
               disabled={!isEdit}
               defaultValue={attachment.link}
-              className="border px-1 mt-1.5 w-full"
+              required
             />
-          </div>
-
-          <div>
-            <button
-              onClick={() => {
-                if (!isEdit) setIsEdit(true);
-                else if (isEdit) {
-                  setIsEdit(false);
-                  setIsOpen(false);
-                }
-              }}
-              type="submit"
-              className={clsxm(
-                "px-2 py-1 w-full mt-4 rounded-xl text-white",
-                isEdit
-                  ? "bg-green-400 hover:bg-green-500"
-                  : "bg-blue-400 hover:bg-blue-500"
-              )}
-            >
-              {isEdit ? "Update" : "Edit"}
-            </button>
-          </div>
-        </form>
+            <div>
+              <button
+                type="submit"
+                className={clsx(
+                  "btn-submit",
+                  isEdit ? "btn-update" : "btn-edit"
+                )}
+              >
+                {isPending ? "Loading..." : isEdit ? "Update" : "Edit"}
+              </button>
+            </div>
+          </form>
+        </FormProvider>
         <button
+          type="button"
           onClick={() => handleDelete(attachment._id)}
-          className="mt-2 px-2 py-1 w-full bg-red-500 hover:bg-red-700 rounded-xl text-white"
+          className="btn-delete"
         >
-          Delete
+          {isPendingDelete ? "Loading..." : "Delete"}
         </button>
       </ReactModal>
     </div>

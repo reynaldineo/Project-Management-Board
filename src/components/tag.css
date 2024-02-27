@@ -1,0 +1,8 @@
+.tag {
+  background-color: rgb(167 139 250);
+  width: fit-content;
+  border-radius: 1rem;
+  padding: 4px 10px;
+  font-size: 14px;
+  line-height: 20px;
+}

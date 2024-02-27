@@ -1,6 +1,8 @@
+import "./loading.css";
+
 export default function Loading() {
   return (
-    <div className="text-typo-dark flex min-h-screen flex-col items-center justify-center">
+    <div className="loading">
       <p>Loading...</p>
     </div>
   );

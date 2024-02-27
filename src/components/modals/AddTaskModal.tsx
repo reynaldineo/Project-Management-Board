@@ -1,11 +1,16 @@
 import { useState } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, FormProvider } from "react-hook-form";
 import ReactModal from "react-modal";
 import PostNewTask from "../../hooks/PostNewTask";
 import { PostTask } from "../../types/task/PostTask";
 import RequiredLabel from "../RequiredLabel";
 import { FaPlus } from "react-icons/fa6";
 import { IoClose } from "react-icons/io5";
+import GetTaskData from "../../hooks/GetTaskData";
+import Input from "../form/Input";
+
+import "./addTaskModal.css";
+import "./../form/input.css";
 
 export default function AddTaskModal({
   defaultStatus,
@@ -14,20 +19,24 @@ export default function AddTaskModal({
 }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   // * React Hook Form
-  const { register, handleSubmit } = useForm<PostTask>({
+  const methods = useForm<PostTask>({
     mode: "onSubmit",
   });
-  const { mutateNewTask } = PostNewTask();
+  const { register, handleSubmit } = methods;
+  const { mutateNewTask, isPending } = PostNewTask();
+  const { refetch } = GetTaskData();
 
-  const onSubmit: SubmitHandler<PostTask> = (data) => {
-    mutateNewTask(data);
+  const onSubmit: SubmitHandler<PostTask> = async (data) => {
+    await mutateNewTask(data);
+    await refetch();
+    setIsOpen(false);
   };
   return (
     <div>
       {defaultStatus ? (
         <button
           type="button"
-          className="w-full p-1.5 bg-gray-300 hover:bg-gray-500 text-white rounded-lg flex items-center justify-center"
+          className="button-newTask-bottom"
           onClick={() => setIsOpen(true)}
         >
           <FaPlus className="mr-1.5" /> New Task
@@ -35,15 +44,16 @@ export default function AddTaskModal({
       ) : (
         <button
           type="button"
-          className="p-2 bg-blue-500 text-white rounded-lg flex items-center"
+          className="button-newTask-top"
           onClick={() => setIsOpen(true)}
         >
-          <FaPlus className="mr-2" /> Add New Task
+          <FaPlus className="icon-plus-addTask" /> Add New Task
         </button>
       )}
       <ReactModal
         isOpen={isOpen}
         contentLabel="Add Task Modal"
+        ariaHideApp={false}
         style={{
           content: {
             left: "50%",
@@ -55,82 +65,42 @@ export default function AddTaskModal({
           },
         }}
       >
-        <form onSubmit={handleSubmit(onSubmit)} className="flex-col space-y-4">
-          <div className="flex justify-between">
-            <p className="text-xl font-bold">Add New Task</p>
-            <button onClick={() => setIsOpen(false)}>
-              <IoClose size={20} />
+        <FormProvider {...methods}>
+          <form onSubmit={handleSubmit(onSubmit)} className="form-container">
+            <div className="div-add-newtask">
+              <p className="p-add-newtask">Add New Task</p>
+              <button type="button" onClick={() => setIsOpen(false)}>
+                <IoClose size={20} />
+              </button>
+            </div>
+            <Input id="title" label="Title" required />
+            <Input id="description" label="Description" required />
+            <Input id="dueDate" type="date" label="Due Date" required />
+            <div>
+              <label htmlFor="status" className="label">
+                Status <RequiredLabel />
+              </label>
+              <select
+                {...register("status")}
+                defaultValue={defaultStatus}
+                id="status"
+                name="status"
+                className="input"
+                required
+              >
+                <option value="" hidden>
+                  Select Status
+                </option>
+                <option value="To Do">To Do</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Done">Done</option>
+              </select>
+            </div>
+            <button type="submit" className="btn-submit">
+              {isPending ? "Loading..." : "Submit"}
             </button>
-          </div>
-          <div>
-            <label htmlFor="fname">
-              Title <RequiredLabel />
-            </label>
-            <input
-              {...register("title")}
-              type="text"
-              id="title"
-              name="title"
-              className="border px-1 mt-1.5 w-full"
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="description">
-              Description <RequiredLabel />
-            </label>
-            <input
-              {...register("description")}
-              type="text"
-              id="description"
-              name="description"
-              className="border px-1 mt-1.5 w-full"
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="dueDate">
-              Due Date <RequiredLabel />
-            </label>
-            <input
-              {...register("dueDate")}
-              type="date"
-              id="dueDate"
-              name="dueDate"
-              className="border px-1 mt-1.5 w-full"
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="status">
-              Status <RequiredLabel />
-            </label>
-            <select
-              {...register("status")}
-              defaultValue={defaultStatus}
-              id="status"
-              name="status"
-              className="border px-1 mt-1.5 w-full"
-              required
-            >
-              <option value="" hidden>
-                Select Status
-              </option>
-              <option value="To Do">To Do</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Done">Done</option>
-            </select>
-          </div>
-          <button
-            onClick={() => setIsOpen(false)}
-            type="submit"
-            className="px-2 py-1 w-full mt-2 bg-blue-400 rounded-xl text-white"
-          >
-            Submit
-          </button>
-        </form>
-        {/* <button onClick={() => setIsOpen(false)}>Close Modal</button> */}
-        {/* di dalam modalnya */}
+          </form>
+        </FormProvider>
       </ReactModal>
     </div>
   );

@@ -1,19 +1,17 @@
-// import { useState } from "react";
 import AddTaskModal from "./components/modals/AddTaskModal";
 import BoardArea from "./container/BoardArea";
+import "./app.css";
 
 function App() {
   return (
-    <main className="min-h-screen ">
-      <section className="px-6 pt-10 md:px-14">
-        <div className="">
-          <p className="text-3xl font-bold">TaskBoard</p>
-          <p className="text-base mt-1.5">Reynaldi Neo R - 5025221265</p>
-        </div>
+    <main className="app-container">
+      <section className="top-section">
+        <p className="text-title">TaskBoard</p>
+        <p className="text-myname">Reynaldi Neo R - 5025221265</p>
       </section>
-      <div className="flex items-center justify-end mr-10">
+      <section className="add-task-modal-container">
         <AddTaskModal />
-      </div>
+      </section>
       <BoardArea />
     </main>
   );

@@ -1,0 +1,17 @@
+.board-area-container {
+  margin-top: 2.5rem;
+  min-height: 100%;
+  padding: 0 1.5rem;
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: scroll;
+  overflow-y: hidden;
+}
+
+@media screen and (min-width: 768px) {
+  .board-area-container {
+    overflow: visible;
+    margin-top: 2rem;
+    gap: 3rem;
+  }
+}

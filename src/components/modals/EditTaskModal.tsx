@@ -1,15 +1,20 @@
 import { useState } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, FormProvider } from "react-hook-form";
 import { FaPlus } from "react-icons/fa6";
 import ReactModal from "react-modal";
 import UpdateTask from "../../hooks/UpdateTask";
-import clsxm from "../../lib/clxsm";
 import { UpdateTaskData } from "../../types/task/UpdateTask";
 import Tag from "../Tag";
 import EditAttachmentModal from "../modals/EditAttachmentModal";
 import { Task } from "../../types/task/Task";
 import { MdEdit } from "react-icons/md";
 import { IoClose } from "react-icons/io5";
+import GetTaskData from "../../hooks/GetTaskData";
+import Input from "../form/Input";
+
+import "./editTaskModal.css";
+import "./../form/input.css";
+import clsx from "clsx";
 
 export default function EditTaskModal({ task }: { task: Task }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -18,28 +23,33 @@ export default function EditTaskModal({ task }: { task: Task }) {
   const [isEdit, setIsEdit] = useState(false);
 
   // * ===== Form =====
-  const { register, handleSubmit } = useForm<UpdateTaskData>();
+  const methods = useForm<UpdateTaskData>();
+  const { register, handleSubmit } = methods;
 
   // * ===== Handle Form =====
-  const { mutateUpdatTask } = UpdateTask();
-  const onSubmit: SubmitHandler<UpdateTaskData> = (data) => {
-    mutateUpdatTask({ taskId: task._id, taskData: data });
+  const { mutateUpdatTask, isPending } = UpdateTask();
+  const { refetch } = GetTaskData();
+  const onSubmit: SubmitHandler<UpdateTaskData> = async (data) => {
+    await mutateUpdatTask({ taskId: task._id, taskData: data });
+    await refetch();
+    if (!isEdit) setIsEdit(true);
+    else if (isEdit) {
+      setIsEdit(false);
+      setIsOpen(false);
+    }
   };
 
   return (
     <div>
-      <div
-        onClick={() => setIsOpen(true)}
-        className="rounded-full p-1.5 bg-blue-500 text-white hover:bg-blue-900"
-      >
+      <div onClick={() => setIsOpen(true)} className="btn-edit-outside">
         <MdEdit size={15} />
       </div>
       <ReactModal
         isOpen={isOpen}
-        contentLabel="Add Task Modal"
+        contentLabel="Edit Task Modal"
+        ariaHideApp={false}
         style={{
           content: {
-            width: "500px",
             left: "50%",
             top: "50%",
             right: "auto",
@@ -49,111 +59,94 @@ export default function EditTaskModal({ task }: { task: Task }) {
           },
         }}
       >
-        <div className="flex justify-between">
-          <p className="text-xl font-bold pb-1.5">Edit Task</p>
-          <button onClick={() => setIsOpen(false)}>
+        <div className="div-add-editTask">
+          <p className="p-add-editTask">Edit Task</p>
+          <button type="button" onClick={() => setIsOpen(false)}>
             <IoClose size={20} />
           </button>
         </div>
-        <form onSubmit={handleSubmit(onSubmit)} className="flex-col space-y-4">
-          <div>
-            <label htmlFor="title">Title</label>
-            <input
-              {...register("title")}
+        <FormProvider {...methods}>
+          <form onSubmit={handleSubmit(onSubmit)} className="form-container">
+            <Input
               id="title"
+              label="Title"
               disabled={!isEdit}
               defaultValue={task.title}
-              className="border px-1 mt-1.5 w-full"
             />
-          </div>
-          <div>
-            <label htmlFor="description">Description</label>
-            <input
-              {...register("description")}
+            <Input
               id="description"
+              label="Description"
               disabled={!isEdit}
               defaultValue={task.description}
-              className="border px-1 mt-1.5 w-full"
             />
-          </div>
-          <div>
-            <label htmlFor="dueDate">Due Date</label>
-            <input
-              {...register("dueDate")}
-              disabled={!isEdit}
-              type="date"
-              defaultValue={task.dueDate}
+            <Input
               id="dueDate"
-              name="dueDate"
-              className="border px-1 mt-1.5 w-full"
-            />
-          </div>
-          <div>
-            <label htmlFor="status">Status</label>
-            <select
-              {...register("status")}
+              type="date"
+              label="Due Date"
               disabled={!isEdit}
-              defaultValue={task.status}
-              id="status"
-              name="status"
-              className="border px-1 mt-1.5 w-full"
-            >
-              <option value="" hidden>
-                Select Status
-              </option>
-              <option value="To Do">To Do</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Done">Done</option>
-            </select>
-          </div>
+              defaultValue={task.dueDate}
+            />
+            <div>
+              <label htmlFor="status">Status</label>
+              <select
+                {...register("status")}
+                disabled={!isEdit}
+                defaultValue={task.status}
+                id="status"
+                name="status"
+                className="input"
+              >
+                <option value="" hidden>
+                  Select Status
+                </option>
+                <option value="To Do">To Do</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Done">Done</option>
+              </select>
+            </div>
 
-          <div>
-            <label htmlFor="status">Tag</label>
-            <div className="flex items-center flex-row flex-wrap gap-1.5">
-              {task.tags.map((tag) => (
-                <Tag title={tag} key={tag} />
-              ))}
-              <button className="flex items-center bg-gray-200 hover:bg-gray-400 w-fit rounded-lg px-2.5 py-1 text-sm mt-2 ml-2">
-                <FaPlus className="mr-2" /> Add Tag
+            <div>
+              <label>Tag</label>
+              <div className="tag-container">
+                {task.tags.map((tag) => (
+                  <Tag title={tag} key={tag} />
+                ))}
+                <button type="button" className="btn-tag">
+                  <FaPlus className="icon-plus" /> Add Tag
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label>Attachment</label>
+              <div className="tag-container">
+                {task.attachments.map((attachment) => (
+                  <EditAttachmentModal
+                    attachment={attachment}
+                    taskId={task._id}
+                    key={attachment._id}
+                  />
+                ))}
+                <button type="button" className="btn-tag">
+                  <FaPlus className="icon-plus" /> Add Attachment
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <button
+                type="submit"
+                className={clsx(
+                  "btn-submit",
+                  isEdit ? "btn-update" : "btn-edit"
+                )}
+              >
+                {isPending && " Loading..."}
+                {isEdit ? "Update" : "Edit"}
               </button>
             </div>
-          </div>
-
-          <div>
-            <label>Attachment</label>
-            <div className="flex items-center flex-row flex-wrap gap-1.5">
-              {task.attachments.map((attachment) => (
-                <EditAttachmentModal
-                  attachment={attachment}
-                  taskId={task._id}
-                  key={attachment._id}
-                />
-              ))}
-              <button className="flex items-center bg-gray-200 hover:bg-gray-400 w-fit rounded-lg px-2.5 py-1 text-sm mt-2 ml-2">
-                <FaPlus className="mr-2" /> Add Attachment
-              </button>
-            </div>
-          </div>
-
-          <div>
-            <button
-              onClick={() => {
-                if (!isEdit) setIsEdit(true);
-                else if (isEdit) {
-                  setIsEdit(false);
-                  setIsOpen(false);
-                }
-              }}
-              type="submit"
-              className={clsxm(
-                "px-2 py-1 w-full mt-4 rounded-xl text-white",
-                isEdit ? "bg-green-400" : "bg-blue-400"
-              )}
-            >
-              {isEdit ? "Update" : "Edit"}
-            </button>
-          </div>
-        </form>
+          </form>
+        </FormProvider>
       </ReactModal>
     </div>
   );

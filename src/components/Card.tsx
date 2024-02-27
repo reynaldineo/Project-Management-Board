@@ -1,11 +1,11 @@
-import clsxm from "../lib/clxsm";
 import { Task } from "../types/task/Task";
-import DeleteTaskModal from "./modal/DeleteTaskModal";
-import DetailTaskModal from "./modal/DetailTaskModal";
+import DeleteTaskModal from "./modals/DeleteTaskModal";
 import Tag from "./Tag";
-import { MdDelete, MdEdit } from "react-icons/md";
 import { format } from "date-fns";
 import { useDragTaskStore } from "../store/useDragTaskStore";
+import EditTaskModal from "./modals/EditTaskModal";
+import "./card.css";
+import clsx from "clsx";
 
 export default function Card({ cardData }: { cardData: Task }) {
   const taskDueDate = format(new Date(cardData.dueDate), "dd/MM/yyyy");
@@ -13,48 +13,29 @@ export default function Card({ cardData }: { cardData: Task }) {
 
   return (
     <div
-      className={clsxm(
-        "bg-white rounded-xl p-3  hover:bg-slate-300 w-[300px] md:w-full border-[2.5px]",
-        cardData.status === "To Do" && "border-red-500",
-        cardData.status === "In Progress" && "border-blue-500",
-        cardData.status === "Done" && "border-green-500"
+      className={clsx(
+        "card-container",
+        cardData.status === "To Do" && "card-red",
+        cardData.status === "In Progress" && "card-blue",
+        cardData.status === "Done" && "card-green"
       )}
       draggable
       onDragStart={() => setDraggedTaskId(cardData._id)}
-      // console.log("dragging" + cardData._id)}
     >
-      <div className="flex items-center justify-between">
-        <p className="text-xl font-semibold">{cardData.title}</p>
-        <div className="flex space-x-2">
-          <DeleteTaskModal taskId={cardData._id}>
-            {({ openModal }) => (
-              <div
-                onClick={openModal}
-                className="rounded-full p-1.5 bg-red-500 text-white hover:bg-red-900"
-              >
-                <MdDelete size={15} />
-              </div>
-            )}
-          </DeleteTaskModal>
-          <DetailTaskModal task={cardData}>
-            {({ openModal }) => (
-              <div
-                onClick={openModal}
-                className="rounded-full p-1.5 bg-blue-500 text-white hover:bg-blue-900"
-              >
-                <MdEdit size={15} />
-              </div>
-            )}
-          </DetailTaskModal>
+      <div className="card-modal-container">
+        <p className="card-title-text">{cardData.title}</p>
+        <div className="card-modal-container-inside">
+          <DeleteTaskModal taskId={cardData._id} />
+          <EditTaskModal task={cardData} />
         </div>
       </div>
-      <div className="flex flex-row flex-wrap gap-1.5">
+      <div className="card-tag-container">
         {cardData.tags.map((tag) => (
           <Tag title={tag} key={tag} />
         ))}
       </div>
-      <div className="flex justify-end">
-        <p className="mt-2 text-sm">{taskDueDate}</p>
+      <div className="card-duedate-container">
+        <p className="text-duedate">{taskDueDate}</p>
       </div>
     </div>
   );

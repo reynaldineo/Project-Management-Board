@@ -1,4 +1,3 @@
-import clsxm from "../lib/clxsm";
 import Card from "./Card";
 import GetTaskData from "../hooks/GetTaskData";
 import { BoardTitle } from "../types/task/Task";
@@ -6,6 +5,8 @@ import { useDragTaskStore } from "../store/useDragTaskStore";
 import UpdateTask from "../hooks/UpdateTask";
 import Loading from "./Loading";
 import AddTaskModal from "./modals/AddTaskModal";
+import "./board.css";
+import clsx from "clsx";
 
 export default function Board({ title }: { title: keyof typeof BoardTitle }) {
   const { taskData, refetch } = GetTaskData();
@@ -21,35 +22,32 @@ export default function Board({ title }: { title: keyof typeof BoardTitle }) {
   );
 
   // * Handle Dropped Task
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     draggedTaskId &&
-      mutateUpdatTask({
+      (await mutateUpdatTask({
         taskId: draggedTaskId,
         taskData: { status: title },
-      });
-    resetDraggedTaskId();
-    refetch();
+      }));
+    await resetDraggedTaskId();
+    await refetch();
   };
 
   return (
-    <section className="w-full min-h-[60vh]  ">
+    <section className="board-container">
       <p
-        className={clsxm(
-          "text-xl font-semibold",
-          "py-2 px-3.5 rounded-xl w-fit ",
-          title === "To Do" && "bg-red-400",
-          title === "In Progress" && "bg-blue-400",
-          title === "Done" && "bg-green-400"
+        className={clsx(
+          "board-title",
+          title === "To Do" && "board-title-red",
+          title === "In Progress" && "board-title-blue",
+          title === "Done" && "board-title-green"
         )}
       >
         {title}
       </p>
 
       <div
-        className={clsxm(
-          "mt-4 rounded-xl bg-gray-700/50 p-4 h-full pb-10 flex flex-col gap-4 min-w-[300px]"
-        )}
+        className="board-card-container"
         onDrop={handleDrop}
         onDragOver={(e) => e.preventDefault()}
       >

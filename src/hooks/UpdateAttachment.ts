@@ -3,7 +3,7 @@ import api from "../lib/api";
 import { UpdateAttachmentType } from "../types/task/UpdateAttachment";
 
 export default function UpdateAttachment() {
-  const { mutate: mutateUpdateAttachment } = useMutation({
+  const { mutate: mutateUpdateAttachment, isPending } = useMutation({
     mutationFn: async ({
       attachmentId,
       taskId,
@@ -16,5 +16,5 @@ export default function UpdateAttachment() {
       return await api.put(`/task/${taskId}/attachment/${attachmentId}`, data);
     },
   });
-  return { mutateUpdateAttachment };
+  return { mutateUpdateAttachment, isPending };
 }

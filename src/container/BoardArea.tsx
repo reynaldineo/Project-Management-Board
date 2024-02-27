@@ -1,15 +1,9 @@
 import Board from "../components/Board";
-import clsxm from "../lib/clxsm";
+import "./boardArea.css";
 
 export default function BoardArea() {
   return (
-    <section
-      className={clsxm(
-        "mt-10 md:mt-8 min-h-full px-6",
-        "flex gap-6 lg:gap-12",
-        "overflow-x-scroll overflow-y-hidden md:overflow-visible"
-      )}
-    >
+    <section className="board-area-container">
       <Board title="To Do" />
       <Board title="In Progress" />
       <Board title="Done" />

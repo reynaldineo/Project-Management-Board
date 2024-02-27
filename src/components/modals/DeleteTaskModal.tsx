@@ -3,26 +3,29 @@ import ReactModal from "react-modal";
 import DeleteTask from "../../hooks/DeleteTask";
 import { MdDelete } from "react-icons/md";
 import { IoClose } from "react-icons/io5";
+import GetTaskData from "../../hooks/GetTaskData";
+import "./deleteTaskModal.css";
 
 export default function DeleteTaskModal({ taskId }: { taskId: string }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  // * React Hook Form
-  const { mutateDeletTask } = DeleteTask();
-  const handleDelete = (taskId: string) => {
-    mutateDeletTask(taskId);
+
+  // * Handle Delete Task
+  const { mutateDeletTask, isPending } = DeleteTask();
+  const { refetch } = GetTaskData();
+  const handleDelete = async (taskId: string) => {
+    await mutateDeletTask(taskId);
+    await refetch();
     setIsOpen(false);
   };
   return (
     <div>
-      <div
-        onClick={() => setIsOpen(true)}
-        className="rounded-full p-1.5 bg-red-500 text-white hover:bg-red-900"
-      >
+      <div onClick={() => setIsOpen(true)} className="btn-delete-outside">
         <MdDelete size={15} />
       </div>
       <ReactModal
         isOpen={isOpen}
-        contentLabel="Add Task Modal"
+        ariaHideApp={false}
+        contentLabel="Delete Task Modal"
         style={{
           content: {
             left: "50%",
@@ -34,27 +37,28 @@ export default function DeleteTaskModal({ taskId }: { taskId: string }) {
           },
         }}
       >
-        <div className="flex justify-between">
+        <div className="delete-container">
           <p className="text-xl font-bold pb-1">Delete Task</p>
-          <button onClick={() => setIsOpen(false)}>
+          <button type="button" onClick={() => setIsOpen(false)}>
             <IoClose size={20} />
           </button>
         </div>
-        <p className="mt-2 md:mt-0 mb-3">
+        <p className="text-makesure-delete">
           Are you sure you want to delete this task?
         </p>
         <div className="flex justify-end space-x-3">
           <button
+            type="button"
             onClick={() => setIsOpen(false)}
-            className="p-2 bg-gray-400 text-white rounded-xl"
+            className="btn-cancel-click"
           >
             Cancel
           </button>
           <button
             onClick={() => handleDelete(taskId)}
-            className="p-2 bg-red-500 text-white rounded-xl"
+            className="btn-delete-click"
           >
-            Delete
+            {isPending ? "Loading..." : "Delete"}
           </button>
         </div>
       </ReactModal>
