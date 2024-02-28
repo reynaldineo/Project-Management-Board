@@ -1,12 +1,12 @@
 import { useState } from "react";
 import ReactModal from "react-modal";
-import { UpdateAttachmentType } from "../../types/task/UpdateAttachment";
+import { UpdateAttachmentType } from "../../../types/task/UpdateAttachment";
 import { useForm, SubmitHandler, FormProvider } from "react-hook-form";
-import DeleteAttachment from "../../hooks/DeleteAttachment";
-import UpdateAttachment from "../../hooks/UpdateAttachment";
+import DeleteAttachment from "../../../hooks/DeleteAttachment";
+import UpdateAttachment from "../../../hooks/UpdateAttachment";
 import { IoClose } from "react-icons/io5";
-import GetTaskData from "../../hooks/GetTaskData";
-import Input from "../form/Input";
+import GetTaskData from "../../../hooks/GetTaskData";
+import Input from "../../form/Input";
 import "./editAttachmentModal.css";
 import clsx from "clsx";
 

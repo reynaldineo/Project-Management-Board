@@ -5,7 +5,7 @@ import ReactModal from "react-modal";
 import UpdateTask from "../../hooks/UpdateTask";
 import { UpdateTaskData } from "../../types/task/UpdateTask";
 import Tag from "../Tag";
-import EditAttachmentModal from "../modals/EditAttachmentModal";
+import EditAttachmentModal from "./attachment/EditAttachmentModal";
 import { Task } from "../../types/task/Task";
 import { MdEdit } from "react-icons/md";
 import { IoClose } from "react-icons/io5";
@@ -15,6 +15,7 @@ import Input from "../form/Input";
 import "./editTaskModal.css";
 import "./../form/input.css";
 import clsx from "clsx";
+import AddAttachmentModal from "./attachment/AddAttachmentModal";
 
 export default function EditTaskModal({ task }: { task: Task }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -135,9 +136,7 @@ export default function EditTaskModal({ task }: { task: Task }) {
                     key={attachment._id}
                   />
                 ))}
-                <button type="button" className="btn-tag">
-                  <FaPlus className="icon-plus" /> Add Attachment
-                </button>
+                <AddAttachmentModal task={task} />
               </div>
             </div>
 

@@ -17,7 +17,8 @@ export default function Board({ title }: { title: keyof typeof BoardTitle }) {
     return <Loading />;
   }
 
-  const SpessificData = taskData.data.data.tasks.filter(
+  // * Filter Data by Status
+  const DataByStatus = taskData.data.data.tasks.filter(
     (task) => task.status === title && !task.deletedAt
   );
 
@@ -51,7 +52,7 @@ export default function Board({ title }: { title: keyof typeof BoardTitle }) {
         onDrop={handleDrop}
         onDragOver={(e) => e.preventDefault()}
       >
-        {SpessificData.map((cardData) => (
+        {DataByStatus.map((cardData) => (
           <Card cardData={cardData} key={cardData._id} />
         ))}
         <AddTaskModal defaultStatus={title} />

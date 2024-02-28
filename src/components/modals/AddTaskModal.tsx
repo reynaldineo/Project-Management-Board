@@ -18,14 +18,16 @@ export default function AddTaskModal({
   defaultStatus?: string;
 }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+
   // * React Hook Form
   const methods = useForm<PostTask>({
     mode: "onSubmit",
   });
   const { register, handleSubmit } = methods;
+
+  // * Handle On Submit
   const { mutateNewTask, isPending } = PostNewTask();
   const { refetch } = GetTaskData();
-
   const onSubmit: SubmitHandler<PostTask> = async (data) => {
     await mutateNewTask(data);
     await refetch();
