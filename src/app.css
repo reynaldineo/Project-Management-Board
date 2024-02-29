@@ -27,6 +27,13 @@
   margin-right: 2.5rem;
 }
 
+.modal-title {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 700;
+  padding-bottom: 0.25rem;
+}
+
 @media screen and (min-width: 768px) {
   .top-section {
     padding-left: 3.5rem;

@@ -41,7 +41,7 @@ export default function AddTaskModal({
           className="button-newTask-bottom"
           onClick={() => setIsOpen(true)}
         >
-          <FaPlus className="mr-1.5" /> New Task
+          <FaPlus className="icon-plus-addTask" /> New Task
         </button>
       ) : (
         <button

@@ -47,7 +47,7 @@ export default function AddAttachmentModal({ task }: { task: Task }) {
         }}
       >
         <div className="delete-container">
-          <p className="text-xl font-bold pb-1">Add Attachment</p>
+          <p className="modal-title">Add Attachment</p>
           <button type="button" onClick={() => setIsOpen(false)}>
             <IoClose size={20} />
           </button>

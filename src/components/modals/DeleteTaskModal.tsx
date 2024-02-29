@@ -38,7 +38,7 @@ export default function DeleteTaskModal({ taskId }: { taskId: string }) {
         }}
       >
         <div className="delete-container">
-          <p className="text-xl font-bold pb-1">Delete Task</p>
+          <p className="modal-title">Delete Task</p>
           <button type="button" onClick={() => setIsOpen(false)}>
             <IoClose size={20} />
           </button>
@@ -46,7 +46,7 @@ export default function DeleteTaskModal({ taskId }: { taskId: string }) {
         <p className="text-makesure-delete">
           Are you sure you want to delete this task?
         </p>
-        <div className="flex justify-end space-x-3">
+        <div className="btn-container-delete-modal">
           <button
             type="button"
             onClick={() => setIsOpen(false)}

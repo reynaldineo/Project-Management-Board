@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useForm, SubmitHandler, FormProvider } from "react-hook-form";
-import { FaPlus } from "react-icons/fa6";
 import ReactModal from "react-modal";
 import UpdateTask from "../../hooks/UpdateTask";
 import { UpdateTaskData } from "../../types/task/UpdateTask";
@@ -16,6 +15,7 @@ import "./editTaskModal.css";
 import "./../form/input.css";
 import clsx from "clsx";
 import AddAttachmentModal from "./attachment/AddAttachmentModal";
+import AddTagModal from "./AddTagModal";
 
 export default function EditTaskModal({ task }: { task: Task }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -120,9 +120,10 @@ export default function EditTaskModal({ task }: { task: Task }) {
                 {task.tags.map((tag) => (
                   <Tag title={tag} key={tag} />
                 ))}
-                <button type="button" className="btn-tag">
+                {/* <button type="button" className="btn-tag">
                   <FaPlus className="icon-plus" /> Add Tag
-                </button>
+                </button> */}
+                <AddTagModal task={task} />
               </div>
             </div>
 
