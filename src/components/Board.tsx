@@ -36,16 +36,19 @@ export default function Board({ title }: { title: keyof typeof BoardTitle }) {
 
   return (
     <section className="board-container">
-      <p
-        className={clsx(
-          "board-title",
-          title === "To Do" && "board-title-red",
-          title === "In Progress" && "board-title-blue",
-          title === "Done" && "board-title-green"
-        )}
-      >
-        {title}
-      </p>
+      <div className="status-container">
+        <p
+          className={clsx(
+            "board-title",
+            title === "To Do" && "board-title-red",
+            title === "In Progress" && "board-title-blue",
+            title === "Done" && "board-title-green"
+          )}
+        >
+          {title}
+        </p>
+        <p className="status-counter">{DataByStatus.length}</p>
+      </div>
 
       <div
         className="board-card-container"
